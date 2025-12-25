@@ -11,23 +11,34 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::latest()->get();
+        return view('contact');
+    }
+
+    public function adminIndex()
+    {
+        $contacts = Contact::latest()->paginate(10);
         return view('admin.kontak.index', compact('contacts'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'email' => 'required|email',
-            'pesan' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
         ]);
 
-        $contact = Contact::create($request->all());
+        $contact = Contact::create([
+            'nama' => $request->name,
+            'email' => $request->email,
+            'subject' => $request->subject,
+            'pesan' => $request->message,
+        ]);
 
         Mail::to('raflyjuliano62@gmail.com')->send(new ContactNotification($contact));
 
-        return redirect('/#contact')->with('success', 'Pesan berhasil dikirim! Terima kasih telah menghubungi saya.');
+        return redirect()->route('contact')->with('success', 'Message sent successfully! Thank you for reaching out. I\'ll get back to you within 24 hours.');
     }
 
     public function destroy($id)

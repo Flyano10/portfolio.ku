@@ -14,6 +14,13 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @auth
+                        @if (auth()->user()->can('viewAny', App\Models\Project::class))
+                            <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
+                                {{ __('Manage Projects') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 

@@ -16,7 +16,9 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('admin.blog.create');
+        return view('admin.blog.create', [
+            'categories' => Post::categoryOptions(),
+        ]);
     }
 
     public function store(Request $request)
@@ -24,15 +26,19 @@ class PostController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
+            'category' => 'required|in:' . implode(',', array_keys(Post::CATEGORIES)),
         ]);
 
-        Post::create($request->only('judul', 'konten'));
+        Post::create($request->only('judul', 'konten', 'category'));
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil ditambahkan!');
     }
 
     public function edit(Post $blog)
     {
-        return view('admin.blog.edit', ['post' => $blog]);
+        return view('admin.blog.edit', [
+            'post' => $blog,
+            'categories' => Post::categoryOptions(),
+        ]);
     }
 
     public function update(Request $request, Post $blog)
@@ -40,9 +46,10 @@ class PostController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'konten' => 'required|string',
+            'category' => 'required|in:' . implode(',', array_keys(Post::CATEGORIES)),
         ]);
 
-        $blog->update($request->only('judul', 'konten'));
+        $blog->update($request->only('judul', 'konten', 'category'));
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil diupdate!');
     }
 

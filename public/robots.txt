@@ -2,17 +2,17 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://raflyjuliano.com/sitemap.xml
+Sitemap: {{ url('/sitemap.xml') }}
 
 # Disallow admin areas
 Disallow: /admin/
-Disallow: /dashboard/
+Disallow: /dashboard
 Disallow: /login
-Disallow: /register
+Disallow: /logout
 
 # Allow important pages
 Allow: /
-Allow: /tentang
-Allow: /skill
+Allow: /about
+Allow: /skills
 Allow: /blog
-Allow: /#contact
+Allow: /contact

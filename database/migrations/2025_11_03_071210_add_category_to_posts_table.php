@@ -9,24 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-
     public function up(): void
-{
-    Schema::create('contacts', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama');
-        $table->string('email');
-        $table->string('subject')->nullable();
-        $table->text('pesan');
-        $table->timestamps();
-    });
-}
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('category')->default('laravel')->after('judul');
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('contacts');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('category');
+        });
     }
 };

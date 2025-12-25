@@ -20,8 +20,7 @@
             </a>
             <div class="text-blue-600">
                 <a href="{{ route('about') }}" class="hover:text-blue-800 transition-colors">About Me</a> • 
-                <a href="{{ route('skill') }}" class="hover:text-blue-800 transition-colors">Skills</a> • 
-                <a href="{{ route('blog.index') }}" class="hover:text-blue-800 transition-colors">Blog</a>
+                <a href="{{ route('skills') }}" class="hover:text-blue-800 transition-colors">Skills</a>
             </div>
         </div>
     </div>

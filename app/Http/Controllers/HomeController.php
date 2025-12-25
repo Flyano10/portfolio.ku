@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Post;
 
 class HomeController extends Controller
 {
@@ -10,7 +11,8 @@ class HomeController extends Controller
     public function index()
     {
         $projects = Project::all();
-        return view('home', compact('projects'));
+        $posts = Post::latest()->limit(6)->get(); // Ambil 6 blog posts terbaru
+        return view('home', compact('projects', 'posts'));
     }
 
     // Halaman Tentang Saya

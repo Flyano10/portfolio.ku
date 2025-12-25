@@ -9,37 +9,60 @@ use App\Http\Controllers\PostController; // ✅ Tambahkan ini
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 
 // Halaman utama
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Halaman Tentang
 Route::get('/tentang', [HomeController::class, 'about'])->name('about');
 
-// Halaman Blog
-Route::get('/blog', [PostController::class, 'index'])->name('blog.index');       // ✅ Tambahkan ini
-Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.show');  // ✅ Tambahkan ini
+// Blog routes
+Route::get('/blog', [PostController::class, 'index'])->name('blog.index');
+Route::get('/blog/{post:id}', [PostController::class, 'show'])->name('blog.show');
 
 // Halaman Kontak
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 
 // Form kontak
-Route::post('/kontak', [ContactController::class, 'store'])->name('kontak.store');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// SEO Routes
+Route::get('/sitemap.xml', function() {
+    return response()->file(public_path('sitemap.xml'));
+});
+
+Route::get('/robots.txt', function() {
+    return response()->file(public_path('robots.txt'));
+});
 
 // Dashboard default
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $projects = \App\Models\Project::latest()->limit(3)->get();
+    $messages = \App\Models\Contact::latest()->limit(3)->get();
+    $stats = [
+        'projects' => \App\Models\Project::count(),
+        'posts' => \App\Models\Post::count(),
+        'messages' => \App\Models\Contact::count(),
+        'recent_messages' => \App\Models\Contact::whereDate('created_at', '>=', now()->subWeek())->count()
+    ];
+    
+    return view('dashboard', compact('projects', 'messages', 'stats'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Grup route khusus yang butuh login
 Route::middleware(['auth'])->group(function () {
     // Admin: lihat dan hapus pesan kontak
-    Route::get('/admin/kontak', [ContactController::class, 'index'])->name('kontak.index');
+    Route::get('/admin/kontak', [ContactController::class, 'adminIndex'])->name('kontak.index');
     Route::delete('/admin/kontak/{id}', [ContactController::class, 'destroy'])->name('kontak.destroy');
 
     // Admin: CRUD Project
     Route::resource('/admin/projects', ProjectController::class)->names('projects');
-    Route::resource('/admin/blog', AdminPostController::class)->names('admin.blog');
+    
+    // Admin: CRUD Blog
+    Route::get('/admin/blog', [AdminPostController::class, 'index'])->name('admin.blog.index');
+    Route::get('/admin/blog/create', [AdminPostController::class, 'create'])->name('admin.blog.create');
+    Route::post('/admin/blog', [AdminPostController::class, 'store'])->name('admin.blog.store');
+    Route::get('/admin/blog/{blog}/edit', [AdminPostController::class, 'edit'])->name('admin.blog.edit');
+    Route::patch('/admin/blog/{blog}', [AdminPostController::class, 'update'])->name('admin.blog.update');
+    Route::delete('/admin/blog/{blog}', [AdminPostController::class, 'destroy'])->name('admin.blog.destroy');
 
     // Profile user
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -47,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/skill', function () {
+Route::get('/skills', function () {
     return view('skill');
-})->name('skill');
+})->name('skills');
 
 require __DIR__ . '/auth.php';

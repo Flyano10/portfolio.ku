@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('judul');
             $table->text('deskripsi');
+            $table->string('screenshot')->nullable();
+            $table->string('demo_url')->nullable();
+            $table->string('github_url')->nullable();
+            $table->json('tech_stack')->nullable();
             $table->timestamps();
         });
     }
